@@ -1,4 +1,7 @@
-public interface IExitableState
+namespace Infrastructure.States.Interfaces
 {
-    void Exit();
+    public interface IExitableState
+    {
+        void Exit();
+    }
 }

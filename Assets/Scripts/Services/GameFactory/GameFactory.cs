@@ -1,4 +1,7 @@
-public class GameFactory : IGameFactory
+namespace Services.GameFactory
 {
+    public class GameFactory : IGameFactory
+    {
     
+    }
 }

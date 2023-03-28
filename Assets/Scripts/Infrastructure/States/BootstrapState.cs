@@ -1,37 +1,40 @@
-using System;
-using CodeBase.Infrastructure;
+using Infrastructure.States.Interfaces;
+using Services;
+using Services.GameFactory;
 
-public class BootstrapState : IState
+namespace Infrastructure.States
 {
-    private readonly StateMachine _stateMachine;
-    private readonly SceneLoader _sceneLoader;
-    private readonly ServiceLocator _serviceLocator;
-
-    public BootstrapState(StateMachine stateMachine, SceneLoader sceneLoader, ServiceLocator serviceLocator)
+    public class BootstrapState : IState
     {
-        _stateMachine = stateMachine;
-        _sceneLoader = sceneLoader;
-        _serviceLocator = serviceLocator;
-    }
+        private readonly SceneLoader _sceneLoader;
+        private readonly ServiceLocator _serviceLocator;
+        private readonly StateMachine _stateMachine;
 
-    public void Enter()
-    {
-        _sceneLoader.Load("BootstrapScene", OnLoadLevel);
-    }
+        public BootstrapState(StateMachine stateMachine, SceneLoader sceneLoader, ServiceLocator serviceLocator)
+        {
+            _stateMachine = stateMachine;
+            _sceneLoader = sceneLoader;
+            _serviceLocator = serviceLocator;
+        }
 
-    public void OnLoadLevel()
-    {
-        RegisterServices();
-        _stateMachine.Enter<LoadLevelState, String>("GameScene");
-    }
+        public void Enter()
+        {
+            _sceneLoader.Load("BootstrapScene", OnLoadLevel);
+        }
 
-    private void RegisterServices()
-    {
-        _serviceLocator.RegisterService<IGameFactory>(new GameFactory());
-    }
+        public void Exit()
+        {
+        }
 
-    public void Exit()
-    {
-            
+        public void OnLoadLevel()
+        {
+            RegisterServices();
+            _stateMachine.Enter<LoadLevelState, string>("GameScene");
+        }
+
+        private void RegisterServices()
+        {
+            _serviceLocator.RegisterService<IGameFactory>(new GameFactory());
+        }
     }
 }

@@ -1,23 +1,31 @@
-using CodeBase.Infrastructure;
+using Infrastructure.States.Interfaces;
+using Services;
 
-public class LoadLevelState : IOVerloadedState<string>
+namespace Infrastructure.States
 {
-    private readonly SceneLoader _sceneLoader;
-    private readonly StateMachine _stateMachine;
-
-    public LoadLevelState(SceneLoader sceneLoader, StateMachine stateMachine)
+    public class LoadLevelState : IOVerloadedState<string>
     {
-        _sceneLoader = sceneLoader;
-        _stateMachine = stateMachine;
-    }
-    public void Enter(string payload) => 
-        _sceneLoader.Load(payload, ChangeState);
+        private readonly SceneLoader _sceneLoader;
+        private readonly StateMachine _stateMachine;
 
-    public void ChangeState() => 
-        _stateMachine.Enter<GameLoopState>();
+        public LoadLevelState(SceneLoader sceneLoader, StateMachine stateMachine)
+        {
+            _sceneLoader = sceneLoader;
+            _stateMachine = stateMachine;
+        }
 
-    public void Exit()
-    {
-        
+        public void Enter(string payload)
+        {
+            _sceneLoader.Load(payload, ChangeState);
+        }
+
+        public void Exit()
+        {
+        }
+
+        public void ChangeState()
+        {
+            _stateMachine.Enter<GameLoopState>();
+        }
     }
 }

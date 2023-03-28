@@ -1,40 +1,46 @@
-using System.Collections.Generic;
 using System;
-using CodeBase.Infrastructure;
+using System.Collections.Generic;
+using Infrastructure.States.Interfaces;
+using Services;
 
-public class StateMachine
+namespace Infrastructure.States
 {
-    private readonly ServiceLocator _serviceLocator;
-    private Dictionary<Type, IExitableState> _states;
-    private IExitableState _currentState;
-    
-    public StateMachine(ServiceLocator serviceLocator, SceneLoader sceneLoader)
+    public class StateMachine
     {
-        _serviceLocator = serviceLocator;
-        _states = new Dictionary<Type, IExitableState>()
+        private readonly ServiceLocator _serviceLocator;
+        private IExitableState _currentState;
+        private readonly Dictionary<Type, IExitableState> _states;
+
+        public StateMachine(ServiceLocator serviceLocator, SceneLoader sceneLoader)
         {
-            [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, serviceLocator),   
-            [typeof(LoadLevelState)] = new LoadLevelState(sceneLoader, this),
-            [typeof(GameLoopState)] = new GameLoopState(),
-        };
-    }   
+            _serviceLocator = serviceLocator;
+            _states = new Dictionary<Type, IExitableState>
+            {
+                [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, serviceLocator),
+                [typeof(LoadLevelState)] = new LoadLevelState(sceneLoader, this),
+                [typeof(GameLoopState)] = new GameLoopState()
+            };
+        }
 
-    public void Enter<TState>() where TState : class,IState
-    {
-        _currentState?.Exit();
-        TState state = GetState<TState>();
-        state.Enter();
-        _currentState = state;
+        public void Enter<TState>() where TState : class, IState
+        {
+            _currentState?.Exit();
+            var state = GetState<TState>();
+            state.Enter();
+            _currentState = state;
+        }
+
+        public void Enter<TState, TPayload>(TPayload payload) where TState : class, IOVerloadedState<TPayload>
+        {
+            _currentState?.Exit();
+            var state = GetState<TState>();
+            state.Enter(payload);
+            _currentState = state;
+        }
+
+        private TState GetState<TState>() where TState : class, IExitableState
+        {
+            return _states[typeof(TState)] as TState;
+        }
     }
-
-    public void Enter<TState, TPayload>(TPayload payload) where TState : class,IOVerloadedState<TPayload>
-    {
-        _currentState?.Exit();
-        TState state = GetState<TState>();
-        state.Enter(payload);
-        _currentState = state;
-    }
-
-    private TState GetState<TState>() where TState : class,IExitableState => 
-        _states[typeof(TState)] as TState;
 }

@@ -1,12 +1,15 @@
-public class GameLoopState : IState
-{
-    public void Enter()
-    {
-        
-    }
+using Infrastructure.States.Interfaces;
 
-    public void Exit()
+namespace Infrastructure.States
+{
+    public class GameLoopState : IState
     {
-        
+        public void Enter()
+        {
+        }
+
+        public void Exit()
+        {
+        }
     }
 }
