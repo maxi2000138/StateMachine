@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HUD.Curtain;
 using Infrastructure.States.Interfaces;
 using Services;
 
@@ -11,14 +12,14 @@ namespace Infrastructure.States
         private IExitableState _currentState;
         private readonly Dictionary<Type, IExitableState> _states;
 
-        public StateMachine(ServiceLocator serviceLocator, SceneLoader sceneLoader)
+        public StateMachine(ServiceLocator serviceLocator, SceneLoader sceneLoader, LoadingCurtain loadingCurtain)
         {
             _serviceLocator = serviceLocator;
             _states = new Dictionary<Type, IExitableState>
             {
-                [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, serviceLocator),
+                [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, serviceLocator, loadingCurtain),
                 [typeof(LoadLevelState)] = new LoadLevelState(sceneLoader, this),
-                [typeof(GameLoopState)] = new GameLoopState()
+                [typeof(GameLoopState)] = new GameLoopState(loadingCurtain)
             };
         }
 

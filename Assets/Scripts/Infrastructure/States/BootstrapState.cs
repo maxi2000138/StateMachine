@@ -1,3 +1,4 @@
+using HUD.Curtain;
 using Infrastructure.States.Interfaces;
 using Services;
 using Services.GameFactory;
@@ -8,17 +9,20 @@ namespace Infrastructure.States
     {
         private readonly SceneLoader _sceneLoader;
         private readonly ServiceLocator _serviceLocator;
+        private readonly LoadingCurtain _curtain;
         private readonly StateMachine _stateMachine;
 
-        public BootstrapState(StateMachine stateMachine, SceneLoader sceneLoader, ServiceLocator serviceLocator)
+        public BootstrapState(StateMachine stateMachine, SceneLoader sceneLoader, ServiceLocator serviceLocator, LoadingCurtain curtain)
         {
             _stateMachine = stateMachine;
             _sceneLoader = sceneLoader;
             _serviceLocator = serviceLocator;
+            _curtain = curtain;
         }
 
         public void Enter()
         {
+            _curtain.Show();
             _sceneLoader.Load("BootstrapScene", OnLoadLevel);
         }
 
